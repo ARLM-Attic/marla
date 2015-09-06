@@ -1,0 +1,7 @@
+
+x = 3
+
+y = 4 if x = 3 else 2
+
+z = j where j = y * x
+

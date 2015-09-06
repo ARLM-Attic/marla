@@ -12,11 +12,16 @@ type NamedType =
 type NamesPassResult =
 	names: { String: NamedType }
 
-type FrontEnd 'ir 'irNames 'irTypes =
-	parse: (doc: Document): 'ir
-	namesPass: (doc: Document, ir: 'ir): (NamesPassResult, 'irNames)
-	typesPass: (doc: Document, ir: 'ir, irNames: 'irNames): (TypesPassResult, 'irTypes)
-	astPass: (doc: Document, ir: 'ir, irNames: 'irNames, irTypes: 'irTypes): AstPassResult
+type CombinedNames =
+	names: { String: NamedType }
 	
-
+type FrontEnd 'ir 'irNames 'irTypes =
+	parse: doc:Document -> 'ir
+	namesPass: doc:Document ir:'ir -> NamesPassResult 'irNames
+	typesPass: doc:Document ir:'ir irNames:'irNames names:CombinedNames -> TypesPassResult 'irTypes
+	astPass: doc:Document ir:'ir irNames:'irNames irTypes:'irTypes -> AstPassResult
+	
+type Language 'ir 'irNames 'irTypes =
+	name: String
+	frontEnd: FrontEnd<'ir, 'irNames, 'irTypes>?
 

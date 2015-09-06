@@ -8,9 +8,10 @@ var ast = require("./marla0ast");
 %%
 
 \s+                   /* skip whitespace */
-"IF"                  return 'IF'
-"ELSE"                return 'ELSE'
-"WHERE"               return 'WHERE'
+"type"                return 'TYPE'
+"if"                  return 'IF'
+"else"                return 'ELSE'
+"where"               return 'WHERE'
 [0-9]+\b              return 'INT'
 [0-9]+("."[0-9]+)\b   return 'FLOAT'
 [a-zA-Z_]\w*          return 'IDENTIFIER'
@@ -22,7 +23,11 @@ var ast = require("./marla0ast");
 "="                   return '='
 "("                   return '('
 ")"                   return ')'
+"<"                   return '<'
+">"                   return '>'
 ":"                   return ':'
+"|"                   return '|'
+"'"                   return 'SQ'
 <<EOF>>               return 'EOF'
 .                     return 'INVALID'
 
@@ -46,17 +51,52 @@ module
     ;
 
 module_item
-    : stmt
-        {$$=$1;}
+    : type_decl
+        {$$=$1;}    
     ;
-
+    
 module_item_list
     : module_item
         {$$=[$1];}
     | module_item_list module_item
-        {$1.push($3);$$=$1;}
+        {$1.push($2);$$=$1;}
     ;
-
+    
+type_decl
+    : TYPE IDENTIFIER '=' typeref
+    ;
+    
+    
+typeref
+    : or_typeref
+    | '|' or_typeref
+    ;
+    
+or_typeref
+    : and_typeref
+    | or_typeref '|' and_typeref
+    ;
+    
+and_typeref
+    : named_typeref
+    | and_typeref named_typeref
+    ;
+    
+named_typeref
+    : primary_typeref
+    | IDENTIFIER ':' primary_typeref
+    ;
+    
+primary_typeref
+    : IDENTIFIER
+    | IDENTIFIER '<' type_args '>'
+    | SQ IDENTIFIER
+    ;
+    
+    
+    
+    
+/*
 stmt
     : postfix_expr '=' expr
         {$$=new ast.AssignStmt($1, $3);}
@@ -157,3 +197,4 @@ bind_list
     | bind_list ';' bind
     ;
 
+*/

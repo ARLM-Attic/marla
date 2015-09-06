@@ -12,6 +12,7 @@ var ast = require("./marla0ast");
 "if"                  return 'IF'
 "else"                return 'ELSE'
 "where"               return 'WHERE'
+"->"                  return 'ARROW'
 [0-9]+\b              return 'INT'
 [0-9]+("."[0-9]+)\b   return 'FLOAT'
 [a-zA-Z_]\w*          return 'IDENTIFIER'
@@ -25,8 +26,12 @@ var ast = require("./marla0ast");
 ")"                   return ')'
 "<"                   return '<'
 ">"                   return '>'
+"{"                   return '{'
+"}"                   return '}'
 ":"                   return ':'
 "|"                   return '|'
+","                   return ','
+"?"                   return '?'
 "'"                   return 'SQ'
 <<EOF>>               return 'EOF'
 .                     return 'INVALID'
@@ -63,37 +68,90 @@ module_item_list
     ;
     
 type_decl
-    : TYPE IDENTIFIER '=' typeref
+    : TYPE IDENTIFIER '=' type_members
+    | TYPE IDENTIFIER type_params '=' type_members
     ;
     
+type_members
+    : type_member
+    | type_members type_member
+    ;
+    
+type_member
+    : '|' IDENTIFIER named_primary_type_list
+    | IDENTIFIER ':' typeref
+    | IDENTIFIER ':' typeref '=' expr
+    | IDENTIFIER '=' expr
+    | IDENTIFIER param_list '=' expr
+    ;
+    
+param_list
+    : param
+    | param_list param
+    ;
+    
+param
+    : IDENTIFIER
+    | IDENTIFIER ':' primary_typeref
+    ;
+    
+named_primary_type_list
+    : named_primary_type
+    | named_primary_type_list ',' named_primary_type
+    ;
+    
+named_primary_type
+    : IDENTIFIER ':' primary_typeref
+    ;
+    
+type_param
+    : SQ IDENTIFIER
+    ;
+    
+type_params
+    : type_param
+    | type_params type_param
+    ;
     
 typeref
-    : or_typeref
-    | '|' or_typeref
-    ;
-    
-or_typeref
-    : and_typeref
-    | or_typeref '|' and_typeref
-    ;
-    
-and_typeref
-    : named_typeref
-    | and_typeref named_typeref
-    ;
-    
-named_typeref
-    : primary_typeref
-    | IDENTIFIER ':' primary_typeref
+    : fun_typeref
     ;
     
 primary_typeref
     : IDENTIFIER
     | IDENTIFIER '<' type_args '>'
     | SQ IDENTIFIER
+    | map_typeref
+    | '{' typeref ':' typeref '}'
+    | '(' tuple_type_args ')'
+    | '(' ')'
+    | primary_typeref '?'
     ;
     
+tuple_type_args
+    : tuple_type_arg
+    | tuple_type_args ',' tuple_type_arg
+    ;
     
+tuple_type_arg
+    : typeref
+    ;
+    
+type_args
+    : type_arg
+    | type_args ',' type_arg
+    ;
+    
+type_arg
+    : typeref
+    ;
+    
+fun_typeref
+    : primary_typeref
+    | fun_typeref ARROW primary_typeref
+    ;
+    
+expr: INT;
     
     
 /*

@@ -8,6 +8,7 @@ var ast = require("./marla0ast");
 %%
 
 \s+                   /* skip whitespace */
+"//".*?\n             /* skip line comment */
 "type"                return 'TYPE'
 "if"                  return 'IF'
 "else"                return 'ELSE'

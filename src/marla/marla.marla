@@ -1,0 +1,27 @@
+/// Marla Language
+
+lang = require "lang"
+parser = require "../bs/marla0parser.js"
+
+marlaParse doc =
+	
+	
+marlaAstPass doc ir irt ct =
+	ir
+
+marlaFrontEnd =
+	{
+		parse: marlaParse
+		typesPass: marlaTypesPass
+		astPass: marlaAstPass
+	}
+	
+
+language =
+	{
+		name: "Marla"
+		frontEnd: marlaFrontEnd
+		backEnd: marlaBackEnd 
+	}
+
+

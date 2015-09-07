@@ -9,6 +9,7 @@ var ast = require("../marla/ast");
 
 \s+                   /* skip whitespace */
 "//".*?\n             /* skip line comment */
+"..."                 return 'NOTIMPL'
 "type"                return 'TYPE'
 "if"                  return 'IF'
 "else"                return 'ELSE'
@@ -61,7 +62,7 @@ module
 
 module_item
     : type_decl
-        {$$=$1;}    
+        {$$=$1;}
     ;
     
 module_item_list
@@ -70,9 +71,16 @@ module_item_list
     | module_item_list module_item
         {$1.push($2);$$=$1;}
     ;
+        
+module_binding
+    : IDENTIFIER '=' expr
+    | IDENTIFIER param_list '=' expr
+    ;
     
 type_decl
-    : TYPE IDENTIFIER '=' type_members
+    : TYPE IDENTIFIER '=' NOTIMPL
+        {$$=new ast.TypeDecl($2,[],[]);}    
+    | TYPE IDENTIFIER '=' type_members
         {$$=new ast.TypeDecl($2,[],$4);}    
     | TYPE IDENTIFIER '<' type_params '>' '=' type_members
         {$$=new ast.TypeDecl($2,$4,$7);}    

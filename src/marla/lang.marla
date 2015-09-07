@@ -1,0 +1,44 @@
+/// Languages
+
+ast = require "./ast"
+
+
+type Document =
+	name: String
+	getCode: () -> String
+	
+type ParseResult =
+	types: { String: TypeDecl }
+	intermediate: Any
+	
+
+type CombinedDecls =
+	types: { String: TypeDecl }
+	intermediate: Any
+	
+type DefsResult =
+	types: [ast.TypeDef] 
+	
+type FrontEnd =
+	parse: Document -> ParseResult
+	getDefs: (Document, ParseResult, CombinedDecls) -> DefsResult
+	
+type CodeWriter =
+	parts: [String]
+	toString () = "".join parts
+	
+type BackEnd =
+	write: CodeWriter -> ()
+	
+	
+type Language<'ir, 'irTypes> =
+	name: String
+	frontEnd: FrontEnd<'ir, 'irTypes>?
+	backEnd: BackEnd<'ir, 'irTypes, AstPassResults>?
+
+
+
+
+
+
+

@@ -5,24 +5,3 @@ type Lit =
 	| IntLit (value:Int)
 	| FloatLit (value:Float)
 	
-type NamedType =
-	name: String
-	
-type NamesPassResult =
-	names: { String: NamedType }
-
-type CombinedNames =
-	names: { String: NamedType }
-	
-type CombinedTypes =
-	types: { String: Type }
-	
-type FrontEnd<'ir, 'irTypes> =
-	parse: Document -> ('ir, NamesPassResult)
-	typesPass: (Document, 'ir, CombinedNames, CombinedNames) -> ('irTypes, TypesPassResult)
-	astPass: (Document, 'ir, 'irTypes, CombinedTypes) -> AstPassResult
-	
-type Language<'ir, 'irTypes> =
-	name: String
-	frontEnd: FrontEnd<'ir, 'irTypes>?
-

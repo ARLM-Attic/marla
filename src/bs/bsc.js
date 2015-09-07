@@ -45,7 +45,7 @@ CodeWriter.prototype = {
 }
 
 function compile(s, w) {
-	console.log(util.inspect(s, {showHidden: false, depth: null}));
+	// console.log(util.inspect(s, {showHidden: false, depth: null}));
 	var typeDecls =
 		s
 		.filter(function(x){return x instanceof ast.TypeDecl});
@@ -159,7 +159,7 @@ function compileFile(paths) {
 		compile(s, w);
 		var js = w.toString();
 		fs.writeFileSync(path.normalize(paths.o), js, "utf8");
-		console.log(js);
+		//console.log(js);
 	}
 	catch (ex) {
 		console.log(ex.message);
@@ -168,7 +168,9 @@ function compileFile(paths) {
 
 (function() {
 	[
-		{i:"../marla/ast.marla", o:"../marla/ast.js"},
+		{i:"../marla/ast.marla", o:"../marla/ast-test.js"},
+		{i:"../marla/lang.marla", o:"../marla/lang.js"},
+		{i:"../marla/marla.marla", o:"../marla/marla.js"},
 		{i:"../marla/mb.marla", o:"../marla/mb.js"},
 	]
 	.forEach(compileFile);

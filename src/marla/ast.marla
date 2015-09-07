@@ -1,0 +1,17 @@
+/// Marla AST
+
+type TypeDecl =
+	name: String
+	params: [String]
+	members: [TypeDeclMember]
+	
+type TypeDeclMember =
+	name: String
+	| Case(members: [TypeCaseMember])
+	| Data(typeref: Typeref, initialValue: Expr?)
+	| Method(params: [FunParam], body: Expr)
+
+type Typeref =
+	| Named(name: String, args: [Typeref])
+	| Unit	
+

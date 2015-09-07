@@ -1,6 +1,6 @@
 
 %{
-var ast = require("./marla0ast");
+var ast = require("../marla/ast");
 %}
 
 /* lexical grammar */
@@ -87,19 +87,19 @@ type_members
     
 type_member
     : '|' IDENTIFIER
-        {$$=new ast.TypeCaseDecl($2, []);}    
+        {$$=new ast.CaseTypeDeclMember($2, []);}    
     | '|' IDENTIFIER '(' type_case_data_list ')'
-        {$$=new ast.TypeCaseDecl($2, $4);}    
+        {$$=new ast.CaseTypeDeclMember($2, $4);}    
     | '|' IDENTIFIER '(' ')'
-        {$$=new ast.TypeCaseDecl($2, []);}    
+        {$$=new ast.CaseTypeDeclMember($2, []);}    
     | IDENTIFIER ':' typeref
-        {$$=new ast.TypeDataDecl($1,$3,null);}    
+        {$$=new ast.DataTypeDeclMember($1,$3,null);}    
     | IDENTIFIER ':' typeref '=' expr
-        {$$=new ast.TypeDataDecl($1,$3,$5);}    
+        {$$=new ast.DataTypeDeclMember($1,$3,$5);}    
     | IDENTIFIER '=' expr
-        {$$=new ast.TypeDataDecl($1,null,$3);}
+        {$$=new ast.DataTypeDeclMember($1,null,$3);}
     | IDENTIFIER param_list '=' expr
-        {$$=new ast.TypeMethodDecl($1,$2,$4);}    
+        {$$=new ast.MethodTypeDeclMember($1,$2,$4);}    
     ;
     
 param_list
@@ -123,7 +123,7 @@ type_case_data_list
     
 type_case_data
     : IDENTIFIER ':' primary_typeref
-        {$$=new ast.TypeDataDecl($1,$3,null);}
+        {$$=new ast.DataTypeDeclMember($1,$3,null);}
     ;
     
 type_param

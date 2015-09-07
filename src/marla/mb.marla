@@ -1,5 +1,4 @@
-
-// AST
+/// Marla Build
 
 type Lit =
 	| StringLit (value:String)
@@ -8,9 +7,6 @@ type Lit =
 	
 type NamedType =
 	name: String
-	
-type Typeref =
-	| NamedTyperef (name:String, args:[Typeref])
 	
 type NamesPassResult =
 	names: { String: NamedType }

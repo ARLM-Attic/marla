@@ -28,6 +28,9 @@ var ast = require("./marla0ast");
 ">"                   return '>'
 "{"                   return '{'
 "}"                   return '}'
+"["                   return '['
+"]"                   return ']'
+"\\"                  return '\\'
 ":"                   return ':'
 "|"                   return '|'
 ","                   return ','
@@ -69,25 +72,40 @@ module_item_list
     
 type_decl
     : TYPE IDENTIFIER '=' type_members
-    | TYPE IDENTIFIER type_params '=' type_members
+        {$$=new ast.TypeDecl($2,[],$4);}    
+    | TYPE IDENTIFIER '<' type_params '>' '=' type_members
+        {$$=new ast.TypeDecl($2,$4,$7);}    
     ;
     
 type_members
     : type_member
+        {$$=[$1];}
     | type_members type_member
+        {$1.push($2);$$=$1;}
     ;
     
 type_member
-    : '|' IDENTIFIER named_primary_type_list
+    : '|' IDENTIFIER
+        {$$=new ast.TypeCaseDecl($2, []);}    
+    | '|' IDENTIFIER '(' type_case_data_list ')'
+        {$$=new ast.TypeCaseDecl($2, $4);}    
+    | '|' IDENTIFIER '(' ')'
+        {$$=new ast.TypeCaseDecl($2, []);}    
     | IDENTIFIER ':' typeref
+        {$$=new ast.TypeDataDecl($1,$3,null);}    
     | IDENTIFIER ':' typeref '=' expr
+        {$$=new ast.TypeDataDecl($1,$3,$5);}    
     | IDENTIFIER '=' expr
+        {$$=new ast.TypeDataDecl($1,null,$3);}
     | IDENTIFIER param_list '=' expr
+        {$$=new ast.TypeMethodDecl($1,$2,$4);}    
     ;
     
 param_list
     : param
+        {$$=[$1];}
     | param_list param
+        {$1.push($2);$$=$1;}
     ;
     
 param
@@ -95,22 +113,28 @@ param
     | IDENTIFIER ':' primary_typeref
     ;
     
-named_primary_type_list
-    : named_primary_type
-    | named_primary_type_list ',' named_primary_type
+type_case_data_list
+    : type_case_data
+        {$$=[$1];}
+    | type_case_data_list ',' type_case_data
+        {$1.push($3);$$=$1;}
     ;
     
-named_primary_type
+type_case_data
     : IDENTIFIER ':' primary_typeref
+        {$$=new ast.TypeDataDecl($1,$3,null);}
     ;
     
 type_param
     : SQ IDENTIFIER
+        {$$="'"+$2;}
     ;
     
 type_params
     : type_param
-    | type_params type_param
+        {$$=[$1];}
+    | type_params ',' type_param
+        {$1.push($3);$$=$1;}
     ;
     
 typeref
@@ -119,36 +143,56 @@ typeref
     
 primary_typeref
     : IDENTIFIER
+        {$$=new ast.NamedTyperef($1,[]);}
     | IDENTIFIER '<' type_args '>'
+        {$$=new ast.NamedTyperef($1,$3);}
     | SQ IDENTIFIER
-    | map_typeref
+        {$$=new ast.NamedTyperef("'"+$2,[]);}
     | '{' typeref ':' typeref '}'
+        {$$=new ast.NamedTyperef("Map", [$2,$4]);}
     | '(' tuple_type_args ')'
+        {$$=new ast.NamedTyperef("Tuple", $2);}
+    | '[' typeref ']'
+        {$$=new ast.NamedTyperef("Array", [$2]);}
+    | '{' typeref '}'
+        {$$=new ast.NamedTyperef("Set", [$2]);}
+    | '\' typeref '\'
+        {$$=new ast.NamedTyperef("Seq", [$2]);}
     | '(' ')'
+        {$$=new ast.UnitTyperef();}
     | primary_typeref '?'
+        {$$=new ast.NamedTyperef("Option", [$1]);}
     ;
     
 tuple_type_args
     : tuple_type_arg
+        {$$=[$1];}
     | tuple_type_args ',' tuple_type_arg
+        {$1.push($3);$$=$1;}
     ;
     
 tuple_type_arg
     : typeref
+        {$$=$1;}
     ;
     
 type_args
     : type_arg
+        {$$=[$1];}
     | type_args ',' type_arg
+        {$1.push($3);$$=$1;}
     ;
     
 type_arg
     : typeref
+        {$$=$1;}
     ;
     
 fun_typeref
     : primary_typeref
-    | fun_typeref ARROW primary_typeref
+        {$$=$1;}
+    | primary_typeref ARROW primary_typeref
+        {$$=new ast.NamedTyperef("Fun", [$1,$3]);}
     ;
     
 expr: INT;

@@ -1,4 +1,42 @@
 
+
+
+
+function TypeDecl(name, params, members) {
+	this.name = name;
+	this.params = params;
+	this.members = members;
+}
+
+function TypeCaseDecl(name, members) {
+	this.name = name;
+	this.members = members;
+}
+
+function TypeDataDecl(name, typeref, expr) {
+	this.name = name;
+	this.typeref = typeref;
+	this.expr = expr;
+}
+
+function TypeMethodDecl(name, params, body) {
+	this.name = name;
+	this.params = params;
+	this.body = body;
+}
+
+function NamedTyperef(name, args) {
+	this.name = name;
+	this.args = args;
+}
+
+function UnitTyperef() {
+}
+
+
+
+
+
 function AssignStmt(name, expr) {
 	this.name = name;
 	this.expr = expr;
@@ -66,6 +104,15 @@ ApplicationExpr.prototype = {
 
 
 if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
+	
+	exports.TypeDecl = TypeDecl;
+	exports.TypeDataDecl = TypeDataDecl;
+	exports.TypeCaseDecl = TypeCaseDecl;
+	exports.TypeMethodDecl = TypeMethodDecl;
+	
+	exports.NamedTyperef = NamedTyperef;
+	exports.UnitTyperef = UnitTyperef;
+	
 	exports.AssignStmt = AssignStmt;
 	exports.StringLit = StringLit;
 	exports.BoolLit = BoolLit;

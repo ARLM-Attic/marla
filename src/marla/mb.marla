@@ -1,13 +1,14 @@
 
-
 type Lit =
-	| StringLit value:String
-	| IntLit value:Int
-	| IntLit value:Int
-	
+	| StringLit (value:String)
+	| IntLit (value:Int)
+	| FloatLit (value:Float)
 	
 type NamedType =
 	name: String
+	
+type Typeref =
+	| NamedTyperef (name:String, args:[Typeref])
 	
 type NamesPassResult =
 	names: { String: NamedType }
@@ -15,13 +16,15 @@ type NamesPassResult =
 type CombinedNames =
 	names: { String: NamedType }
 	
-type FrontEnd 'ir 'irNames 'irTypes =
-	parse: Document -> 'ir
-	namesPass: Document -> 'ir -> (NamesPassResult, 'irNames)
-	typesPass: Document -> 'ir -> 'irNames -> CombinedNames -> (TypesPassResult, 'irTypes)
-	astPass: Document -> 'ir -> irNames -> 'irTypes -> AstPassResult
+type CombinedTypes =
+	types: { String: Type }
 	
-type Language 'ir 'irNames 'irTypes =
+type FrontEnd<'ir, 'irTypes> =
+	parse: Document -> ('ir, NamesPassResult)
+	typesPass: (Document, 'ir, CombinedNames, CombinedNames) -> ('irTypes, TypesPassResult)
+	astPass: (Document, 'ir, 'irTypes, CombinedTypes) -> AstPassResult
+	
+type Language<'ir, 'irTypes> =
 	name: String
-	frontEnd: FrontEnd<'ir, 'irNames, 'irTypes>?
+	frontEnd: FrontEnd<'ir, 'irTypes>?
 

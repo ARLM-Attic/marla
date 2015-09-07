@@ -7,8 +7,11 @@ var ast = require("../marla/ast");
 %lex
 %%
 
-\s+                   /* skip whitespace */
 "//".*?\n             /* skip line comment */
+[\t ]                 return 'LWS'
+(\r\n|\n)             return 'LF'
+"»"                   return 'OUTDENT'
+"«"                   return 'INDENT'
 "..."                 return 'NOTIMPL'
 "type"                return 'TYPE'
 "if"                  return 'IF'
@@ -63,6 +66,7 @@ module
 module_item
     : type_decl
         {$$=$1;}
+    | module_binding
     ;
     
 module_item_list
@@ -73,16 +77,18 @@ module_item_list
     ;
         
 module_binding
-    : IDENTIFIER '=' expr
-    | IDENTIFIER param_list '=' expr
+    : LF IDENTIFIER olws '=' olws expr
+    | LF IDENTIFIER olws param_list olws '=' olws expr
     ;
     
+olws : LWS | ;
+    
 type_decl
-    : TYPE IDENTIFIER '=' NOTIMPL
+    : LF TYPE LWS IDENTIFIER olws '=' olws NOTIMPL
         {$$=new ast.TypeDecl($2,[],[]);}    
-    | TYPE IDENTIFIER '=' type_members
+    | LF TYPE LWS IDENTIFIER olws '=' olws INDENT type_members OUTDENT
         {$$=new ast.TypeDecl($2,[],$4);}    
-    | TYPE IDENTIFIER '<' type_params '>' '=' type_members
+    | LF TYPE LWS IDENTIFIER olws '<' olws type_params olws '>' olws '=' olws INDENT type_members OUTDENT
         {$$=new ast.TypeDecl($2,$4,$7);}    
     ;
     
@@ -204,7 +210,7 @@ fun_typeref
         {$$=new ast.NamedTyperef("Fun", [$1,$3]);}
     ;
     
-expr: INT;
+expr: INT | IDENTIFIER;
     
     
 /*

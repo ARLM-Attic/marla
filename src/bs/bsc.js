@@ -151,9 +151,73 @@ function compile(s, w) {
 	
 }
 
+function CodeBlock(code) {
+	this.code = code;
+	this.children = []
+}
+
+function CodeBlocks(code) {
+	
+	var ws = ' \f\n\r\t\v\u00A0\u2028\u2029';
+	
+	function getIndent(line) {
+		var c = 0;
+		for (var i = 0; i < line.length; i++) {
+			if (ws.indexOf(line[i]) >= 0) {
+				c++;
+			}
+			else {
+				break;
+			}
+		}
+		return c;
+	}
+	
+	var lines = code.split(/\r?\n/);
+	
+	var root = new CodeBlock("");
+	var stack = [root];
+	var top = root;
+	var curIndent = 0;
+	
+	lines.forEach(function(line) {
+		if (/^\s*$/.test(line)) {
+			// skip
+		}
+		else {
+			var newTop;
+			var indent = getIndent(line);
+			var b = new CodeBlock(line); 
+			if (indent > curIndent) {
+				newTop = top.children[top.children.length-1];
+				stack.push(newTop);
+				top = newTop;
+				curIndent = indent;
+			}
+			else if (indent < curIndent) {
+				stack.pop();
+				newTop = stack[stack.length-1];
+				top = newTop;
+				curIndent = indent;
+			}
+			top.children.push(b);
+		}
+		
+	});
+	
+	this.root = root;
+}
+CodeBlocks.prototype = {
+	toString: function() {
+		return "????";
+	}
+}
+
 function compileFile(paths) {
 	try {
 		var code = fs.readFileSync(path.normalize(paths.i), "utf8");
+		var blocks = new CodeBlocks(code);
+		console.log(util.inspect(blocks.root, {showHidden: false, depth: null}));
 		var s = parser.parse(code);
 		var w = new CodeWriter();
 		compile(s, w);

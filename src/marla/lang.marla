@@ -1,6 +1,6 @@
 /// Languages
 
-ast = require "./ast"
+//ast = require "./ast"
 
 
 type Document =

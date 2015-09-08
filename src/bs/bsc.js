@@ -153,8 +153,21 @@ function compile(s, w) {
 
 function CodeBlock(code) {
 	this.code = code;
-	this.children = []
+	this.children = [];
 }
+CodeBlock.prototype = {
+	write: function(parts) {
+		parts.push(this.code);
+		parts.push("\n");
+		if (this.children.length > 0) {
+			parts.push("»\n");
+			for (var i = 0; i < this.children.length; i++) {
+				this.children[i].write(parts);				
+			}
+			parts.push("«\n");
+		}
+	}
+};
 
 function CodeBlocks(code) {
 	
@@ -187,7 +200,7 @@ function CodeBlocks(code) {
 		else {
 			var newTop;
 			var indent = getIndent(line);
-			var b = new CodeBlock(line); 
+			var b = new CodeBlock(line.trim()); 
 			if (indent > curIndent) {
 				newTop = top.children[top.children.length-1];
 				stack.push(newTop);
@@ -209,7 +222,11 @@ function CodeBlocks(code) {
 }
 CodeBlocks.prototype = {
 	toString: function() {
-		return "????";
+		var parts = [];		
+		for (var i = 0; i < this.root.children.length; i++) {
+			this.root.children[i].write(parts);
+		}
+		return parts.join("");
 	}
 }
 
@@ -217,8 +234,10 @@ function compileFile(paths) {
 	try {
 		var code = fs.readFileSync(path.normalize(paths.i), "utf8");
 		var blocks = new CodeBlocks(code);
-		console.log(util.inspect(blocks.root, {showHidden: false, depth: null}));
-		var s = parser.parse(code);
+		var bcode = blocks.toString();
+		// console.log(bcode);
+		// console.log(util.inspect(blocks.root, {showHidden: false, depth: null}));
+		var s = parser.parse(bcode);
 		var w = new CodeWriter();
 		compile(s, w);
 		var js = w.toString();

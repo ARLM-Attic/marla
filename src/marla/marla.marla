@@ -1,9 +1,9 @@
 /// Marla Language
 
-lang = require "lang"
-parser = require "../bs/marla0parser.js"
+//lang = require "lang"
+//parser = require "../bs/marla0parser.js"
 
-marlaParse doc =
+marlaParse doc = 0
 	
 	
 marlaAstPass doc ir irt ct =

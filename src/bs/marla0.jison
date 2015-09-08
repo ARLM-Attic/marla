@@ -1,17 +1,18 @@
 
 %{
 var ast = require("../marla/ast");
+//console.log("LEX " + parser.terminals_[r]);
 %}
 
 /* lexical grammar */
 %lex
 %%
 
-"//".*?\n             /* skip line comment */
-[\t ]                 return 'LWS'
-(\r\n|\n)             return 'LF'
-"»"                   return 'OUTDENT'
-"«"                   return 'INDENT'
+("//".*?)((\r?\n))    /* skip line comment */
+[\t ]                 /* skip line whitespace */
+(\r?\n)               return 'LF'
+"»"                   return 'INDENT'
+"«"                   return 'OUTDENT'
 "..."                 return 'NOTIMPL'
 "type"                return 'TYPE'
 "if"                  return 'IF'
@@ -59,7 +60,9 @@ var ast = require("../marla/ast");
 
 
 module
-    : module_item_list EOF
+    : module_item_list LF EOF
+        {return $1;}
+    | module_item_list EOF
         {return $1;}
     ;
 
@@ -67,36 +70,36 @@ module_item
     : type_decl
         {$$=$1;}
     | module_binding
+        {$$=$1;}
     ;
     
 module_item_list
     : module_item
         {$$=[$1];}
-    | module_item_list module_item
-        {$1.push($2);$$=$1;}
+    | module_item_list LF module_item
+        {$1.push($3);$$=$1;}
     ;
         
 module_binding
-    : LF IDENTIFIER olws '=' olws expr
-    | LF IDENTIFIER olws param_list olws '=' olws expr
+    : IDENTIFIER '=' expr
+    | IDENTIFIER ':' typeref '=' expr
+    | IDENTIFIER params '=' expr
     ;
     
-olws : LWS | ;
-    
 type_decl
-    : LF TYPE LWS IDENTIFIER olws '=' olws NOTIMPL
+    : TYPE IDENTIFIER '=' NOTIMPL
         {$$=new ast.TypeDecl($2,[],[]);}    
-    | LF TYPE LWS IDENTIFIER olws '=' olws INDENT type_members OUTDENT
-        {$$=new ast.TypeDecl($2,[],$4);}    
-    | LF TYPE LWS IDENTIFIER olws '<' olws type_params olws '>' olws '=' olws INDENT type_members OUTDENT
-        {$$=new ast.TypeDecl($2,$4,$7);}    
+    | TYPE IDENTIFIER '=' LF INDENT LF type_members LF OUTDENT
+        {$$=new ast.TypeDecl($2,[],$7);}    
+    | TYPE IDENTIFIER '<' type_params '>' '=' LF INDENT LF type_members LF OUTDENT
+        {$$=new ast.TypeDecl($2,$4,$10);}    
     ;
     
 type_members
     : type_member
         {$$=[$1];}
-    | type_members type_member
-        {$1.push($2);$$=$1;}
+    | type_members LF type_member
+        {$1.push($3);$$=$1;}
     ;
     
 type_member
@@ -112,14 +115,19 @@ type_member
         {$$=new ast.DataTypeDeclMember($1,$3,$5);}    
     | IDENTIFIER '=' expr
         {$$=new ast.DataTypeDeclMember($1,null,$3);}
-    | IDENTIFIER param_list '=' expr
+    | IDENTIFIER params '=' expr
         {$$=new ast.MethodTypeDeclMember($1,$2,$4);}    
+    ;
+    
+params
+    : param
+    | '(' param_list ')'
     ;
     
 param_list
     : param
         {$$=[$1];}
-    | param_list param
+    | param_list ',' param
         {$1.push($2);$$=$1;}
     ;
     

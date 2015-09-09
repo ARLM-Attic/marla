@@ -245,7 +245,7 @@ function compileFile(paths) {
 		//console.log(js);
 	}
 	catch (ex) {
-		console.log(ex.message);
+		console.log("\033[4m" + paths.i + ":\033[24m \033[95m" + ex.message + "\033[0m");
 	}
 }
 

@@ -13,5 +13,6 @@ type TypeDeclMember =
 
 type Typeref =
 	| Named(name: String, args: [Typeref])
+	| Member(typeref: Typeref, name: string)
 	| Unit	
 

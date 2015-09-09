@@ -59,6 +59,16 @@ NamedTyperef.prototype = Object.create(Typeref.prototype, {
 NamedTyperef.prototype.constructor = NamedTyperef;
 exports.NamedTyperef = NamedTyperef;
 
+function MemberTyperef(typeref, name) {
+    Typeref.call(this);
+    this.typeref = typeref;
+    this.name = name;
+}
+MemberTyperef.prototype = Object.create(Typeref.prototype, {
+});
+MemberTyperef.prototype.constructor = MemberTyperef;
+exports.MemberTyperef = MemberTyperef;
+
 function UnitTyperef() {
     Typeref.call(this);
 }

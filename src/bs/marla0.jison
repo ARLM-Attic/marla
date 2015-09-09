@@ -21,7 +21,9 @@ var ast = require("../marla/ast");
 "->"                  return 'ARROW'
 [0-9]+\b              return 'INT'
 [0-9]+("."[0-9]+)\b   return 'FLOAT'
+\"(\\.|[^"])*\"       return 'STRING'
 [a-zA-Z_]\w*          return 'IDENTIFIER'
+"."                   return '.'
 "*"                   return '*'
 "/"                   return '/'
 "-"                   return '-'
@@ -122,6 +124,7 @@ type_member
 params
     : param
     | '(' param_list ')'
+    | '(' ')'
     ;
     
 param_list
@@ -185,6 +188,12 @@ primary_typeref
         {$$=new ast.UnitTyperef();}
     | primary_typeref '?'
         {$$=new ast.NamedTyperef("Option", [$1]);}
+    | primary_typeref '.' member_ref
+        {$$=new ast.MemberTyperef($1, [$3]);}
+    ;
+    
+member_ref
+    : IDENTIFIER
     ;
     
 tuple_type_args

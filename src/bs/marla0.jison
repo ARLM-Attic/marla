@@ -18,7 +18,6 @@ var ast = require("../marla/ast");
 "type"                return 'TYPE'
 "for"                 return 'FOR'
 "if"                  return 'IF'
-"then"                return 'THEN'
 "else"                return 'ELSE'
 "where"               return 'WHERE'
 "->"                  return 'ARROW'
@@ -425,7 +424,7 @@ stmt
     : expr
     | expr ASSIGN_OP expr_or_block
     | let_expr
-    | IF expr THEN LF INDENT LF stmt_list LF OUTDENT
+    | IF expr LF INDENT LF stmt_list LF OUTDENT
     | FOR IDENTIFIER '=' expr RANGE expr LF INDENT LF stmt_list LF OUTDENT
     ;
     

@@ -40,7 +40,7 @@ type CodeWriter =
 	outdent! () =
 		indentLevel <- indentLevel - 1
 	writeIndentIfNeeded! () =
-		if needsIndent then
+		if needsIndent
 			needsIndent <- false
 			for i = 0..<indentLevel
 				parts.push(indentString)	

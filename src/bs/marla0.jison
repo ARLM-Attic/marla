@@ -14,8 +14,11 @@ var ast = require("../marla/ast");
 "»"                   return 'INDENT'
 "«"                   return 'OUTDENT'
 "..."                 return 'NOTIMPL'
+"..<"                 return 'RANGE'
 "type"                return 'TYPE'
+"for"                 return 'FOR'
 "if"                  return 'IF'
+"then"                return 'THEN'
 "else"                return 'ELSE'
 "where"               return 'WHERE'
 "->"                  return 'ARROW'
@@ -24,7 +27,10 @@ var ast = require("../marla/ast");
 \"(\\.|[^"])*\"       return 'STRING'
 [a-zA-Z_]\w*          return 'IDENTIFIER'
 "=="                  return 'EQ_OP'
-"=!"                  return 'ASSIGN_OP'
+">="                  return 'GE_OP'
+"<="                  return 'LE_OP'
+"<-"                  return 'ASSIGN_OP'
+"!"                   return '!'
 "."                   return '.'
 "*"                   return '*'
 "/"                   return '/'
@@ -84,7 +90,7 @@ module_item_list
     : module_item
         {$$=[$1];}
     | module_item_list LF module_item
-        {$1.push($3);$$=$1;}
+        {$1.push($2);$$=$1;}
     ;
         
 module_binding
@@ -110,6 +116,27 @@ type_members
         {$1.push($3);$$=$1;}
     ;
     
+member_head
+    : IDENTIFIER
+        {$$=$1;}
+    | IDENTIFIER '!'
+        {$$=$1;}
+    ;
+    
+member_type
+    : ':' typeref
+        {$$=$2;}
+    |
+        {$$=null;}
+    ;
+    
+member_body
+    : '=' expr_or_block
+        {$$=$2;}
+    |
+        {$$=null;}
+    ;
+    
 type_member
     : '|' IDENTIFIER
         {$$=new ast.CaseTypeDeclMember($2, []);}    
@@ -117,14 +144,10 @@ type_member
         {$$=new ast.CaseTypeDeclMember($2, $4);}    
     | '|' IDENTIFIER '(' ')'
         {$$=new ast.CaseTypeDeclMember($2, []);}    
-    | IDENTIFIER ':' typeref
-        {$$=new ast.DataTypeDeclMember($1,$3,null);}    
-    | IDENTIFIER ':' typeref '=' expr
-        {$$=new ast.DataTypeDeclMember($1,$3,$5);}    
-    | IDENTIFIER '=' expr
-        {$$=new ast.DataTypeDeclMember($1,null,$3);}
-    | IDENTIFIER params '=' expr
-        {$$=new ast.MethodTypeDeclMember($1,$2,$4);}    
+    | member_head member_type member_body
+        {$$=new ast.DataTypeDeclMember($1,$2,$3);}    
+    | member_head params member_type member_body
+        {$$=new ast.MethodTypeDeclMember($1,$2,$3,$4);}    
     ;
     
 params
@@ -329,28 +352,36 @@ application_arg_list
     | application_arg_list ',' expr
     ;
 
-application_expr
+application_expr    
     : unary_expr
         {$$=$1;}
     | postfix_expr '(' application_arg_list ')'
-        {$$=new ast.ApplicationExpr($1, $2);}
+        {$$=new ast.ApplicationExpr($1, $3);}
+    | postfix_expr '(' ')'
+        {$$=new ast.ApplicationExpr($1, []);}
     ;
 
 mul_expr
     : application_expr
         {$$=$1;}
     | mul_expr '*' application_expr
-        {$$=new ast.ApplicationExpr(new ast.VarExpr("*"), [$1, $3]);}
+    | mul_expr '/' application_expr
     ;
 
 add_expr
     : mul_expr
     | add_expr '+' mul_expr
+        {$$=new ast.ApplicationExpr(new ast.VarExpr("+"), [$1, $3]);}
+    | add_expr '-' mul_expr
+        {$$=new ast.ApplicationExpr(new ast.VarExpr("-"), [$1, $3]);}
     ;
 
 rel_expr
     : add_expr
     | rel_expr '<' add_expr
+    | rel_expr LE_OP add_expr
+    | rel_expr '>' add_expr
+    | rel_expr GE_OP add_expr
     ;
 
 eq_expr
@@ -394,11 +425,13 @@ stmt
     : expr
     | expr ASSIGN_OP expr_or_block
     | let_expr
+    | IF expr THEN LF INDENT LF stmt_list LF OUTDENT
+    | FOR IDENTIFIER '=' expr RANGE expr LF INDENT LF stmt_list LF OUTDENT
     ;
     
 stmt_list
     : stmt
-    | stmt_list stmt
+    | stmt_list LF stmt
     ;
 
 let_expr

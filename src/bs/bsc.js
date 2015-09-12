@@ -151,7 +151,8 @@ function compile(s, w) {
 	
 }
 
-function CodeBlock(code) {
+function CodeBlock(indent, code) {
+	this.indent = indent;
 	this.code = code;
 	this.children = [];
 }
@@ -188,10 +189,9 @@ function CodeBlocks(code) {
 	
 	var lines = code.split(/\r?\n/);
 	
-	var root = new CodeBlock("");
+	var root = new CodeBlock(-1, "");
 	var stack = [root];
 	var top = root;
-	var curIndent = 0;
 	
 	lines.forEach(function(line) {
 		if (/^\s*$/.test(line)) {
@@ -200,18 +200,19 @@ function CodeBlocks(code) {
 		else {
 			var newTop;
 			var indent = getIndent(line);
-			var b = new CodeBlock(line.trim()); 
-			if (indent > curIndent) {
-				newTop = top.children[top.children.length-1];
-				stack.push(newTop);
-				top = newTop;
-				curIndent = indent;
-			}
-			else if (indent < curIndent) {
-				stack.pop();
-				newTop = stack[stack.length-1];
-				top = newTop;
-				curIndent = indent;
+			var b = new CodeBlock(indent, line.trim()); 
+			if (top.children.length > 0) {
+				if (indent > top.children[0].indent) {
+					newTop = top.children[top.children.length-1];
+					stack.push(newTop);
+					top = newTop;
+				}
+				while (top.children.length > 0 && indent < top.children[0].indent) {
+					stack.pop();
+					top = stack[stack.length-1];
+					// Nothing
+					// console.log("??");
+				}
 			}
 			top.children.push(b);
 		}

@@ -5,7 +5,7 @@
 
 type Document =
 	name: String
-	getCode: () -> String
+	code: String
 	
 type ParseResult =
 	types: { String: TypeDecl }
@@ -24,17 +24,35 @@ type FrontEnd =
 	getDefs: (Document, ParseResult, CombinedDecls) -> DefsResult
 	
 type CodeWriter =
-	parts: [String]
+	parts!: [String]
+	indentString = "    "
 	toString () = "".join(parts)
+	write! s =
+		writeIndentIfNeeded()
+		parts.push(s)
+	writen! s =
+		writeIndentIfNeeded()
+		parts.push(s)
+		parts.push("\n")
+		needsIndex <- true
+	indent! () =
+		indentLevel <- indentLevel + 1
+	outdent! () =
+		indentLevel <- indentLevel - 1
+	writeIndentIfNeeded! () =
+		if needsIndent then
+			needsIndent <- false
+			for i = 0..<indentLevel
+				parts.push(indentString)	
 	
 type BackEnd =
 	write: CodeWriter -> ()
 	
 	
-type Language<'ir, 'irTypes> =
+type Language =
 	name: String
-	frontEnd: FrontEnd<'ir, 'irTypes>?
-	backEnd: BackEnd<'ir, 'irTypes, AstPassResults>?
+	frontEnd: FrontEnd?
+	backEnd: BackEnd?
 
 
 

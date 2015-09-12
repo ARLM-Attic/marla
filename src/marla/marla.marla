@@ -3,7 +3,13 @@
 //lang = require "lang"
 //parser = require "../bs/marla0parser.js"
 
-marlaParse document : ParseResult = 0
+
+type CodeBlock =
+	code: String
+	children: [CodeBlock]
+
+marlaParse document : ParseResult =
+	moduleDefs = parser.parse(document.Code)
 	
 	
 marlaGetDefs (document, parseResult, combinedDecls) : DefsResult =

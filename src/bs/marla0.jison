@@ -90,7 +90,7 @@ module_item_list
     : module_item
         {$$=[$1];}
     | module_item_list LF module_item
-        {$1.push($2);$$=$1;}
+        {$1.push($3);$$=$1;}
     ;
         
 module_binding

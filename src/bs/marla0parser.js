@@ -98,8 +98,8 @@ break;
 case 6: case 15: case 31: case 35: case 39: case 54: case 57:
 this.$=[$$[$0]];
 break;
-case 7: case 32:
-$$[$0-2].push($$[$0-1]);this.$=$$[$0-2];
+case 7: case 16: case 36: case 40: case 55: case 58:
+$$[$0-2].push($$[$0]);this.$=$$[$0-2];
 break;
 case 12:
 this.$=new ast.TypeDecl($$[$0-2],[],[]);
@@ -109,9 +109,6 @@ this.$=new ast.TypeDecl($$[$0-7],[],$$[$0-2]);
 break;
 case 14:
 this.$=new ast.TypeDecl($$[$0-10],$$[$0-8],$$[$0-2]);
-break;
-case 16: case 36: case 40: case 55: case 58:
-$$[$0-2].push($$[$0]);this.$=$$[$0-2];
 break;
 case 18:
 this.$=$$[$0-1];
@@ -133,6 +130,9 @@ this.$=new ast.DataTypeDeclMember($$[$0-2],$$[$0-1],$$[$0]);
 break;
 case 27:
 this.$=new ast.MethodTypeDeclMember($$[$0-3],$$[$0-2],$$[$0-1],$$[$0]);
+break;
+case 32:
+$$[$0-2].push($$[$0-1]);this.$=$$[$0-2];
 break;
 case 37:
 this.$=new ast.DataTypeDeclMember($$[$0-2],$$[$0],null);

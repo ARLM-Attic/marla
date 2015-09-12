@@ -23,6 +23,8 @@ var ast = require("../marla/ast");
 [0-9]+("."[0-9]+)\b   return 'FLOAT'
 \"(\\.|[^"])*\"       return 'STRING'
 [a-zA-Z_]\w*          return 'IDENTIFIER'
+"=="                  return 'EQ_OP'
+"=!"                  return 'ASSIGN_OP'
 "."                   return '.'
 "*"                   return '*'
 "/"                   return '/'
@@ -353,7 +355,7 @@ rel_expr
 
 eq_expr
     : rel_expr
-    | eq_expr '=' rel_expr
+    | eq_expr EQ_OP rel_expr
     ;
 
 and_expr
@@ -390,6 +392,8 @@ rec_binding_block_list
 
 stmt
     : expr
+    | expr ASSIGN_OP expr_or_block
+    | let_expr
     ;
     
 stmt_list
@@ -397,7 +401,10 @@ stmt_list
     | stmt_list stmt
     ;
 
-
+let_expr
+    : IDENTIFIER '=' expr_or_block
+    | IDENTIFIER ':' typeref '=' expr_or_block
+    ;
 
 
 

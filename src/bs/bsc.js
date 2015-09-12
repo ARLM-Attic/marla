@@ -47,8 +47,8 @@ CodeWriter.prototype = {
 function compile(s, w) {
 	// console.log(util.inspect(s, {showHidden: false, depth: null}));
 	var typeDecls =
-		s
-		.filter(function(x){return x instanceof ast.TypeDecl});
+		s.members
+		.filter(function(x){return x instanceof ast.TypeModuleMember});
 
 	typeDecls.forEach(function (x) {
 		var head = "";
@@ -60,7 +60,7 @@ function compile(s, w) {
 		head = "";
 		var xdataMems =
 			x.members
-			.filter(function(x){return x instanceof ast.DataTypeDeclMember});
+			.filter(function(x){return x instanceof ast.DataTypeMember});
 		xdataMems.forEach(function(x){
 			w.write(head); head=", ";
 			w.write(x.name)})
@@ -91,7 +91,7 @@ function compile(s, w) {
 		
 		var caseMems =
 			x.members
-			.filter(function(x){return x instanceof ast.CaseTypeDeclMember});
+			.filter(function(x){return x instanceof ast.CaseTypeMember});
 		caseMems.forEach(function(y) {
 			w.write("function ")
 			w.write(y.name + x.name)

@@ -6,32 +6,34 @@ Document.prototype = {
 };
 exports.Document = Document;
 
-function ParseResult(types, intermediate) {
-    this.types = types;
+function ParseResult(module, messages, intermediate) {
+    this.module = module;
+    this.messages = messages;
     this.intermediate = intermediate;
 }
 ParseResult.prototype = {
 };
 exports.ParseResult = ParseResult;
 
-function CombinedDecls(types, intermediate) {
-    this.types = types;
+function CombinedDecls(modules, intermediate) {
+    this.modules = modules;
     this.intermediate = intermediate;
 }
 CombinedDecls.prototype = {
 };
 exports.CombinedDecls = CombinedDecls;
 
-function DefsResult(types) {
-    this.types = types;
+function CompileResult(messages, module) {
+    this.messages = messages;
+    this.module = module;
 }
-DefsResult.prototype = {
+CompileResult.prototype = {
 };
-exports.DefsResult = DefsResult;
+exports.CompileResult = CompileResult;
 
-function FrontEnd(parse, getDefs) {
+function FrontEnd(parse, compile) {
     this.parse = parse;
-    this.getDefs = getDefs;
+    this.compile = compile;
 }
 FrontEnd.prototype = {
 };

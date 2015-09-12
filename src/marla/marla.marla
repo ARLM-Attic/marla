@@ -1,7 +1,7 @@
 /// Marla Language
 
-//lang = require "lang"
-//parser = require "../bs/marla0parser.js"
+import "./lang"
+import "../bs/marla0parser.js"
 
 
 type CodeBlock =

@@ -1,47 +1,99 @@
-function TypeDecl(name, params, members) {
+function Module(members) {
+    this.members = members;
+}
+Module.prototype = {
+};
+exports.Module = Module;
+
+function ModuleMember(name) {
     this.name = name;
+}
+ModuleMember.prototype = {
+};
+exports.ModuleMember = ModuleMember;
+
+function ImportModuleMember(name, url) {
+    ModuleMember.call(this, name);
+    this.url = url;
+}
+ImportModuleMember.prototype = Object.create(ModuleMember.prototype, {
+});
+ImportModuleMember.prototype.constructor = ImportModuleMember;
+exports.ImportModuleMember = ImportModuleMember;
+
+function TypeModuleMember(name, params, members) {
+    ModuleMember.call(this, name);
     this.params = params;
     this.members = members;
 }
-TypeDecl.prototype = {
-};
-exports.TypeDecl = TypeDecl;
-
-function TypeDeclMember(name) {
-    this.name = name;
-}
-TypeDeclMember.prototype = {
-};
-exports.TypeDeclMember = TypeDeclMember;
-
-function CaseTypeDeclMember(name, members) {
-    TypeDeclMember.call(this, name);
-    this.members = members;
-}
-CaseTypeDeclMember.prototype = Object.create(TypeDeclMember.prototype, {
+TypeModuleMember.prototype = Object.create(ModuleMember.prototype, {
 });
-CaseTypeDeclMember.prototype.constructor = CaseTypeDeclMember;
-exports.CaseTypeDeclMember = CaseTypeDeclMember;
+TypeModuleMember.prototype.constructor = TypeModuleMember;
+exports.TypeModuleMember = TypeModuleMember;
 
-function DataTypeDeclMember(name, typeref, initialValue) {
-    TypeDeclMember.call(this, name);
+function DataModuleMember(name, typeref, initialValue) {
+    ModuleMember.call(this, name);
     this.typeref = typeref;
     this.initialValue = initialValue;
 }
-DataTypeDeclMember.prototype = Object.create(TypeDeclMember.prototype, {
+DataModuleMember.prototype = Object.create(ModuleMember.prototype, {
 });
-DataTypeDeclMember.prototype.constructor = DataTypeDeclMember;
-exports.DataTypeDeclMember = DataTypeDeclMember;
+DataModuleMember.prototype.constructor = DataModuleMember;
+exports.DataModuleMember = DataModuleMember;
 
-function MethodTypeDeclMember(name, params, body) {
-    TypeDeclMember.call(this, name);
+function FunModuleMember(name, params, body) {
+    ModuleMember.call(this, name);
     this.params = params;
     this.body = body;
 }
-MethodTypeDeclMember.prototype = Object.create(TypeDeclMember.prototype, {
+FunModuleMember.prototype = Object.create(ModuleMember.prototype, {
 });
-MethodTypeDeclMember.prototype.constructor = MethodTypeDeclMember;
-exports.MethodTypeDeclMember = MethodTypeDeclMember;
+FunModuleMember.prototype.constructor = FunModuleMember;
+exports.FunModuleMember = FunModuleMember;
+
+function FunParam(name, typeref) {
+    this.name = name;
+    this.typeref = typeref;
+}
+FunParam.prototype = {
+};
+exports.FunParam = FunParam;
+
+function TypeMember(name) {
+    this.name = name;
+}
+TypeMember.prototype = {
+};
+exports.TypeMember = TypeMember;
+
+function CaseTypeMember(name, members) {
+    TypeMember.call(this, name);
+    this.members = members;
+}
+CaseTypeMember.prototype = Object.create(TypeMember.prototype, {
+});
+CaseTypeMember.prototype.constructor = CaseTypeMember;
+exports.CaseTypeMember = CaseTypeMember;
+
+function DataTypeMember(name, typeref, initialValue) {
+    TypeMember.call(this, name);
+    this.typeref = typeref;
+    this.initialValue = initialValue;
+}
+DataTypeMember.prototype = Object.create(TypeMember.prototype, {
+});
+DataTypeMember.prototype.constructor = DataTypeMember;
+exports.DataTypeMember = DataTypeMember;
+
+function FunTypeMember(name, params, body) {
+    TypeMember.call(this, name);
+    this.params = params;
+    this.body = body;
+}
+FunTypeMember.prototype = Object.create(TypeMember.prototype, {
+});
+FunTypeMember.prototype.constructor = FunTypeMember;
+exports.FunTypeMember = FunTypeMember;
 
 function Typeref() {
 }

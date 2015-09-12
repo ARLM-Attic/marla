@@ -1,15 +1,24 @@
 /// Marla AST
 
-type TypeDecl =
+type Module =	
+	members: [ModuleMember]
+
+type ModuleMember =
 	name: String
-	params: [String]
-	members: [TypeDeclMember]
+	| Import(url: String)
+	| Type(params: [String], members: [TypeMember])
+	| Data(typeref: Typeref?, initialValue: Expr?)
+	| Fun(params: [FunParam], body: Expr)
 	
-type TypeDeclMember =
+type FunParam =
 	name: String
-	| Case(members: [TypeCaseMember])
-	| Data(typeref: Typeref, initialValue: Expr?)
-	| Method(params: [FunParam], body: Expr)
+	typeref: Typeref?
+
+type TypeMember =
+	name: String
+	| Case(members: [TypeMember])
+	| Data(typeref: Typeref?, initialValue: Expr?)
+	| Fun(params: [FunParam], body: Expr)
 
 type Typeref =
 	| Named(name: String, args: [Typeref])
@@ -30,4 +39,6 @@ type Literal =
 	| String (value:String)
 	| Int (value:Int)
 	| Float (value:Float)
+	
 
+	

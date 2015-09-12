@@ -20,6 +20,7 @@ var ast = require("../marla/ast");
 "if"                  return 'IF'
 "else"                return 'ELSE'
 "where"               return 'WHERE'
+"import"              return 'IMPORT'
 "->"                  return 'ARROW'
 [0-9]+\b              return 'INT'
 [0-9]+("."[0-9]+)\b   return 'FLOAT'
@@ -70,42 +71,36 @@ var ast = require("../marla/ast");
 
 
 module
-    : module_item_list LF EOF
-        {return $1;}
-    | module_item_list EOF
-        {return $1;}
+    : module_member_list LF EOF
+        {return new ast.Module($1);}
+    | module_member_list EOF
+        {return new ast.Module($1);}
     | EOF
-        {return [];}
+        {return new ast.Module([]);}
     ;
 
-module_item
+module_member
     : type_decl
         {$$=$1;}
-    | module_binding
-        {$$=$1;}
-    ;
-    
-module_item_list
-    : module_item
-        {$$=[$1];}
-    | module_item_list LF module_item
-        {$1.push($3);$$=$1;}
-    ;
-        
-module_binding
-    : IDENTIFIER '=' expr_or_block
-    | IDENTIFIER ':' typeref '=' expr_or_block
-    | IDENTIFIER params '=' expr_or_block
-    | IDENTIFIER params ':' typeref '=' expr_or_block
-    ;
-    
-type_decl
-    : TYPE IDENTIFIER '=' NOTIMPL
-        {$$=new ast.TypeDecl($2,[],[]);}    
+    | member_head member_type member_body
+        {$$=new ast.DataModuleMember($1,$2,$3);}
+    | member_head params member_type member_body
+        {$$=new ast.FunModuleMember($1,$2,$3,$4);}
+    | IMPORT STRING
+        {$$=$2+"";}
+    | TYPE IDENTIFIER '=' NOTIMPL
+        {$$=new ast.TypeModuleMember($2,[],[]);}    
     | TYPE IDENTIFIER '=' LF INDENT LF type_members LF OUTDENT
-        {$$=new ast.TypeDecl($2,[],$7);}    
+        {$$=new ast.TypeModuleMember($2,[],$7);}    
     | TYPE IDENTIFIER '<' type_params '>' '=' LF INDENT LF type_members LF OUTDENT
-        {$$=new ast.TypeDecl($2,$4,$10);}    
+        {$$=new ast.TypeModuleMember($2,$4,$10);}    
+    ;
+    
+module_member_list
+    : module_member
+        {$$=[$1];}
+    | module_member_list LF module_member
+        {$1.push($3);$$=$1;}
     ;
     
 type_members
@@ -138,15 +133,15 @@ member_body
     
 type_member
     : '|' IDENTIFIER
-        {$$=new ast.CaseTypeDeclMember($2, []);}    
+        {$$=new ast.CaseTypeMember($2, []);}    
     | '|' IDENTIFIER '(' type_case_data_list ')'
-        {$$=new ast.CaseTypeDeclMember($2, $4);}    
+        {$$=new ast.CaseTypeMember($2, $4);}    
     | '|' IDENTIFIER '(' ')'
-        {$$=new ast.CaseTypeDeclMember($2, []);}    
+        {$$=new ast.CaseTypeMember($2, []);}    
     | member_head member_type member_body
-        {$$=new ast.DataTypeDeclMember($1,$2,$3);}    
+        {$$=new ast.DataTypeMember($1,$2,$3);}    
     | member_head params member_type member_body
-        {$$=new ast.MethodTypeDeclMember($1,$2,$3,$4);}    
+        {$$=new ast.FunTypeMember($1,$2,$3,$4);}    
     ;
     
 params
@@ -176,7 +171,7 @@ type_case_data_list
     
 type_case_data
     : IDENTIFIER ':' primary_typeref
-        {$$=new ast.DataTypeDeclMember($1,$3,null);}
+        {$$=new ast.DataTypeMember($1,$3,null);}
     ;
     
 type_param

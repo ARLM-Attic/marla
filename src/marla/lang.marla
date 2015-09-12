@@ -1,6 +1,6 @@
 /// Languages
 
-//ast = require "./ast"
+import "./ast"
 
 
 type Document =
@@ -8,20 +8,21 @@ type Document =
 	code: String
 	
 type ParseResult =
-	types: { String: TypeDecl }
+	module: ast.ModuleDecl
+	messages: [String]
 	intermediate: Any
 	
-
 type CombinedDecls =
-	types: { String: TypeDecl }
+	modules: { String: ast.ModuleDecl }
 	intermediate: Any
 	
-type DefsResult =
-	types: [ast.TypeDef] 
+type CompileResult =
+	messages: [String]
+	module: ast.ModuleDecl
 	
 type FrontEnd =
 	parse: Document -> ParseResult
-	getDefs: (Document, ParseResult, CombinedDecls) -> DefsResult
+	compile: (Document, ParseResult, CombinedDecls) -> CompileResult
 	
 type CodeWriter =
 	parts!: [String]

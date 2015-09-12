@@ -1,7 +1,3 @@
 /// Marla Build
 
-type Lit =
-	| StringLit (value:String)
-	| IntLit (value:Int)
-	| FloatLit (value:Float)
 	

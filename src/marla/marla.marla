@@ -6,7 +6,7 @@
 marlaParse doc = 0
 	
 	
-marlaAstPass doc ir irt ct =
+marlaAstPass (doc, ir, irt, ct) =
 	ir
 
 marlaFrontEnd =

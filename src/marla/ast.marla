@@ -16,3 +16,18 @@ type Typeref =
 	| Member(typeref: Typeref, name: string)
 	| Unit	
 
+type RecBinding =
+	name: String
+	value: Expr
+
+type Expr =
+	| Var(name: String)
+	| If(predicate: Expr, value: Expr, alternate: Expr)
+	| Rec(bindings: [RecBinding], value: Expr)
+	| Application(fun: Expr, body: Expr) 
+
+type Literal =
+	| String (value:String)
+	| Int (value:Int)
+	| Float (value:Float)
+

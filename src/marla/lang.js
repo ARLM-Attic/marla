@@ -1,41 +1,44 @@
-function NamedType(name) {
+function Document(name, getCode) {
     this.name = name;
+    this.getCode = getCode;
 }
-NamedType.prototype = {
+Document.prototype = {
 };
-exports.NamedType = NamedType;
+exports.Document = Document;
 
-function NamesPassResult(names) {
-    this.names = names;
+function ParseResult(types, intermediate) {
+    this.types = types;
+    this.intermediate = intermediate;
 }
-NamesPassResult.prototype = {
+ParseResult.prototype = {
 };
-exports.NamesPassResult = NamesPassResult;
+exports.ParseResult = ParseResult;
 
-function CombinedNames(names) {
-    this.names = names;
+function CombinedDecls(types, intermediate) {
+    this.types = types;
+    this.intermediate = intermediate;
 }
-CombinedNames.prototype = {
+CombinedDecls.prototype = {
 };
-exports.CombinedNames = CombinedNames;
+exports.CombinedDecls = CombinedDecls;
 
-function CombinedTypes(types) {
+function DefsResult(types) {
     this.types = types;
 }
-CombinedTypes.prototype = {
+DefsResult.prototype = {
 };
-exports.CombinedTypes = CombinedTypes;
+exports.DefsResult = DefsResult;
 
-function FrontEnd(parse, typesPass, astPass) {
+function FrontEnd(parse, getDefs) {
     this.parse = parse;
-    this.typesPass = typesPass;
-    this.astPass = astPass;
+    this.getDefs = getDefs;
 }
 FrontEnd.prototype = {
 };
 exports.FrontEnd = FrontEnd;
 
-function CodeWriter() {
+function CodeWriter(parts) {
+    this.parts = parts;
 }
 CodeWriter.prototype = {
 };

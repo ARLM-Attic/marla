@@ -40,6 +40,7 @@ var ast = require("../marla/ast");
 "]"                   return ']'
 "\\"                  return '\\'
 ":"                   return ':'
+";"                   return ';'
 "|"                   return '|'
 ","                   return ','
 "?"                   return '?'
@@ -66,6 +67,8 @@ module
         {return $1;}
     | module_item_list EOF
         {return $1;}
+    | EOF
+        {return [];}
     ;
 
 module_item
@@ -83,9 +86,9 @@ module_item_list
     ;
         
 module_binding
-    : IDENTIFIER '=' expr
-    | IDENTIFIER ':' typeref '=' expr
-    | IDENTIFIER params '=' expr
+    : IDENTIFIER '=' expr_or_block
+    | IDENTIFIER ':' typeref '=' expr_or_block
+    | IDENTIFIER params '=' expr_or_block
     ;
     
 type_decl
@@ -227,20 +230,33 @@ fun_typeref
         {$$=new ast.NamedTyperef("Fun", [$1,$3]);}
     ;
     
-expr: INT | IDENTIFIER;
     
     
-/*
-stmt
-    : postfix_expr '=' expr
-        {$$=new ast.AssignStmt($1, $3);}
+    
+    
+    
+    
+expr_or_block
+    : expr
+        {$$=$1;}
+    | LF INDENT LF stmt_list LF OUTDENT 
+        {$$=$4;}
     ;
 
 expr
     : or_expr
         {$$=$1;}
-    | or_expr WHERE bind_list
+    | or_expr WHERE rec_binding_inline_list
         {$$=new ast.WhereExpr($1, $3);}
+    | or_expr WHERE LF INDENT LF rec_binding_block_list LF OUTDENT
+        {$$=new ast.WhereExpr($1, $6);}
+    | or_expr IF or_expr ELSE or_expr
+        {$$=new ast.IfExpr($1, $3, $5);}
+    ;
+
+expr_ww
+    : or_expr
+        {$$=$1;}
     | or_expr IF or_expr ELSE or_expr
         {$$=new ast.IfExpr($1, $3, $5);}
     ;
@@ -249,26 +265,54 @@ primary_expr
     : IDENTIFIER
         {$$=new ast.VarExpr($1);}
     | literal
+        {$$=$1;}
+    | map_ctor_expr
+        {$$=$1;}
     ;
+    
+map_ctor_element_inline
+    : IDENTIFIER ':' expr_ww
+    ;
+    
+map_ctor_element_inline_list
+    : map_ctor_element_inline
+    | map_ctor_element_inline_list ';' map_ctor_element_inline
+    ;
+    
+map_ctor_element_block
+    : IDENTIFIER ':' expr
+    ;
+    
+map_ctor_element_block_list
+    : map_ctor_element_block
+    | map_ctor_element_block_list LF map_ctor_element_block
+    ;
+    
+map_ctor_expr
+    : '{' map_ctor_element_inline_list  '}' 
+    | '{' LF INDENT LF map_ctor_element_block_list LF OUTDENT LF '}'
+    ; 
 
 literal
     : FLOAT
-        {$$=new ast.FloatLit($1);}
+        {$$=new ast.FloatLiteral($1);}
     | INT
-        {$$=new ast.IntLit($1);}
+        {$$=new ast.IntLiteral($1);}
     | BOOL
-        {$$=new ast.BoolLit($1);}
+        {$$=new ast.BoolLiteral($1);}
     | STRING
-        {$$=new ast.StringLit($1);}
+        {$$=new ast.StringLiteral($1);}
     ;
 
 postfix_expr
     : primary_expr
+        {$$=$1;}
     | postfix_expr '.' IDENTIFIER
     ;
 
 unary_expr
     : postfix_expr
+        {$$=$1;}
     | unary_op unary_expr
     ;
 
@@ -278,19 +322,22 @@ unary_op
     ;
 
 application_arg_list
-    : unary_expr
-    | application_arg_list unary_expr
+    : expr
+    | application_arg_list ',' expr
     ;
 
 application_expr
     : unary_expr
-    | postfix_expr application_arg_list
+        {$$=$1;}
+    | postfix_expr '(' application_arg_list ')'
         {$$=new ast.ApplicationExpr($1, $2);}
     ;
 
 mul_expr
     : application_expr
+        {$$=$1;}
     | mul_expr '*' application_expr
+        {$$=new ast.ApplicationExpr(new ast.VarExpr("*"), [$1, $3]);}
     ;
 
 add_expr
@@ -310,7 +357,7 @@ eq_expr
 
 and_expr
     : eq_expr
-    | and_expr LOGICAL_AND_OP rel_expr
+    | and_expr LOGICAL_AND_OP eq_expr
     ;
 
 or_expr
@@ -318,17 +365,42 @@ or_expr
     | or_expr LOGICAL_OR_OP and_expr
     ;
 
-expr_ww
-    : or_expr
-    ;
-
-bind
+rec_binding_inline
     : IDENTIFIER '=' expr_ww
     ;
 
-bind_list
-    : bind
-    | bind_list ';' bind
+rec_binding_inline_list
+    : rec_binding_inline
+    | rec_binding_inline_list ';' rec_binding_inline
     ;
 
-*/
+rec_binding_block
+    : IDENTIFIER '=' expr_or_block
+    ;
+
+rec_binding_block_list
+    : rec_binding_block
+    | rec_binding_block_list LF rec_binding_block
+    ;
+
+
+
+
+
+stmt
+    : expr
+    ;
+    
+stmt_list
+    : stmt
+    | stmt_list stmt
+    ;
+
+
+
+
+
+
+
+
+

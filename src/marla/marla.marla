@@ -3,19 +3,25 @@
 //lang = require "lang"
 //parser = require "../bs/marla0parser.js"
 
-marlaParse doc = 0
+marlaParse document : ParseResult = 0
 	
 	
-marlaAstPass (doc, ir, irt, ct) =
+marlaGetDefs (document, parseResult, combinedDecls) : DefsResult =
 	ir
+	
+marlaWrite (w: CodeWriter) =
+	0
 
 marlaFrontEnd =
 	{
 		parse: marlaParse
-		typesPass: marlaTypesPass
-		astPass: marlaAstPass
+		getDefs: marlaGetDefs
 	}
 	
+marlaBackEnd =
+	{
+		write: marlaWrite
+	}
 
 language =
 	{

@@ -89,6 +89,7 @@ module_binding
     : IDENTIFIER '=' expr_or_block
     | IDENTIFIER ':' typeref '=' expr_or_block
     | IDENTIFIER params '=' expr_or_block
+    | IDENTIFIER params ':' typeref '=' expr_or_block
     ;
     
 type_decl
@@ -125,7 +126,7 @@ type_member
     ;
     
 params
-    : param
+    : IDENTIFIER
     | '(' param_list ')'
     | '(' ')'
     ;

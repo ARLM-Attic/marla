@@ -18,7 +18,7 @@ type TypeMember =
 	name: String
 	| Case(members: [TypeMember])
 	| Data(typeref: Typeref?, initialValue: Expr?)
-	| Fun(params: [FunParam], body: Expr)
+	| Fun(params: [FunParam], returnType: Typeref?, body: [Stmt])
 
 type Typeref =
 	| Named(name: String, args: [Typeref])
@@ -30,15 +30,24 @@ type RecBinding =
 	value: Expr
 
 type Expr =
+	| Literal(literal: Literal)
 	| Var(name: String)
 	| If(predicate: Expr, value: Expr, alternate: Expr)
 	| Rec(bindings: [RecBinding], value: Expr)
-	| Application(fun: Expr, body: Expr) 
+	| Apply(fun: Expr, args: [Expr])
+	| Member(obj: Expr, member: String)
+	| Block(statements: [Stmt])
 
 type Literal =
-	| String (value:String)
-	| Int (value:Int)
-	| Float (value:Float)
+	| String(value: String)
+	| Int(value: Int)
+	| Float(value: Float)
+	| Bool(value: Bool)
 	
-
+type Stmt =
+	| Expr(expr: Expr)
+	| Assign(left: Expr, value: Expr)
+	| Let(name: String, typeref: Typeref?, initialValue: Expr)
+	| If(condition: Expr, trueBody: [Stmt], falseBody: [Stmt])
+	| For(name: String, collection: Expr, body: [Stmt])
 	

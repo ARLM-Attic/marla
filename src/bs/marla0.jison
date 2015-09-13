@@ -15,6 +15,8 @@ var ast = require("../marla/ast");
 "«"                   return 'OUTDENT'
 "..."                 return 'NOTIMPL'
 "..<"                 return 'RANGE'
+"true"                return 'TRUE'
+"false"               return 'FALSE'
 "type"                return 'TYPE'
 "for"                 return 'FOR'
 "if"                  return 'IF'
@@ -261,9 +263,9 @@ fun_typeref
     
 expr_or_block
     : expr
-        {$$=[$1];}
+        {$$=$1;}
     | LF INDENT LF stmt_list LF OUTDENT 
-        {$$=$4;}
+        {$$=($4.length==1)?($4[0]):(new ast.BlockExpr($4));}
     ;
 
 expr
@@ -288,7 +290,7 @@ primary_expr
     : IDENTIFIER
         {$$=new ast.VarExpr($1);}
     | literal
-        {$$=$1;}
+        {$$=new ast.LiteralExpr($1);}
     | map_ctor_expr
         {$$=$1;}
     ;
@@ -321,8 +323,10 @@ literal
         {$$=new ast.FloatLiteral($1);}
     | INT
         {$$=new ast.IntLiteral($1);}
-    | BOOL
-        {$$=new ast.BoolLiteral($1);}
+    | TRUE
+        {$$=new ast.BoolLiteral(true);}
+    | FALSE
+        {$$=new ast.BoolLiteral(false);}
     | STRING
         {$$=new ast.StringLiteral($1);}
     ;
@@ -331,6 +335,7 @@ postfix_expr
     : primary_expr
         {$$=$1;}
     | postfix_expr '.' IDENTIFIER
+        {$$=new ast.MemberExpr($1,$3);}
     ;
 
 unary_expr
@@ -346,16 +351,18 @@ unary_op
 
 application_arg_list
     : expr
+        {$$=[$1];}
     | application_arg_list ',' expr
+        {$1.push($3);$$=$1;}
     ;
 
 application_expr    
     : unary_expr
         {$$=$1;}
     | postfix_expr '(' application_arg_list ')'
-        {$$=new ast.ApplicationExpr($1, $3);}
+        {$$=new ast.ApplyExpr($1, $3);}
     | postfix_expr '(' ')'
-        {$$=new ast.ApplicationExpr($1, []);}
+        {$$=new ast.ApplyExpr($1, []);}
     ;
 
 mul_expr
@@ -368,9 +375,9 @@ mul_expr
 add_expr
     : mul_expr
     | add_expr '+' mul_expr
-        {$$=new ast.ApplicationExpr(new ast.VarExpr("+"), [$1, $3]);}
+        {$$=new ast.ApplyExpr(new ast.VarExpr("+"), [$1, $3]);}
     | add_expr '-' mul_expr
-        {$$=new ast.ApplicationExpr(new ast.VarExpr("-"), [$1, $3]);}
+        {$$=new ast.ApplyExpr(new ast.VarExpr("-"), [$1, $3]);}
     ;
 
 rel_expr
@@ -419,15 +426,18 @@ rec_binding_block_list
 
 
 stmt
-    : expr
-        {$$=$1;}
+    : IDENTIFIER '=' expr_or_block
+        {$$=new ast.LetStmt($1, null, $3);}
+    | IDENTIFIER ':' typeref '=' expr_or_block
+        {$$=new ast.LetStmt($1, $3, $5);}
+    | expr
+        {$$=new ast.ExprStmt($1);}
     | expr ASSIGN_OP expr_or_block
-//        {$$=new ast.AssignStmt($1);}
-    | let_expr
-        {$$=$1;}
+        {$$=new ast.AssignStmt($1, $3);}
     | IF expr LF INDENT LF stmt_list LF OUTDENT
-//        {$$=new ast.IfStmt($1);}
+        {$$=new ast.IfStmt($2, $6, null);}
     | FOR IDENTIFIER '=' expr RANGE expr LF INDENT LF stmt_list LF OUTDENT
+        {$$=new ast.ForStmt($2, $4, $10);}
     ;
     
 stmt_list
@@ -437,10 +447,6 @@ stmt_list
         {$1.push($3);$$=$1;}
     ;
 
-let_expr
-    : IDENTIFIER '=' expr_or_block
-    | IDENTIFIER ':' typeref '=' expr_or_block
-    ;
 
 
 

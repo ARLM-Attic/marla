@@ -57,9 +57,59 @@ function compile(s, w) {
 		w.write(")")
 	}
 	
+	function writeExpr(x) {
+		var head = "";
+		var y;
+		if (x instanceof ast.LiteralExpr) {
+			w.write(x.literal.value+"");
+		}
+		else if (x instanceof ast.VarExpr) {
+			w.write(x.name);
+		}
+		else if (x instanceof ast.MemberExpr) {
+			writeExpr(x.obj);
+			w.write(".");
+			w.write(x.member);
+		}
+		else if (x instanceof ast.ApplyExpr) {
+			writeExpr(x.fun);
+			w.write("(");
+			head = "";
+			x.args.forEach(function(x) {
+				w.write(head);
+				writeExpr(x);
+				head = ", ";
+			});
+			w.write(")");
+		}
+		else {
+			w.write("XXX");
+		}
+	}
+	
 	function writeFunBody(body) {
-		w.write("{");
+		w.writen("{");
 		w.indent();
+		if (body instanceof ast.BlockExpr) {
+			body.statements.forEach(function(x) {
+				if (x instanceof ast.ExprStmt) {
+					writeExpr(x.expr);
+					w.write(";");
+				}
+				else if (x instanceof ast.AssignStmt) {
+					writeExpr(x.left);
+					w.write(" = ");
+					writeExpr(x.value);
+					w.write(";");
+				}
+				w.writen();
+			});
+		}
+		else {
+			w.write("return ");
+			writeExpr(body);
+			w.writen(";");
+		}
 		w.outdent();
 		w.write("}");
 	}

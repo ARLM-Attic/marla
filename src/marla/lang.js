@@ -44,12 +44,28 @@ function CodeWriter(parts, indentString) {
     this.indentString = indentString;
 }
 CodeWriter.prototype = {
-    toString: function() {},
-    write: function(s) {},
-    writen: function(s) {},
-    indent: function() {},
-    outdent: function() {},
-    writeIndentIfNeeded: function() {},
+    toString: function() {
+        return "".join(parts);
+    },
+    write: function(s) {
+        writeIndentIfNeeded();
+        parts.push(s);
+    },
+    writen: function(s) {
+        writeIndentIfNeeded();
+        parts.push(s);
+        parts.push("\n");
+        needsIndex = true;
+    },
+    indent: function() {
+        return XXX;
+    },
+    outdent: function() {
+        return XXX;
+    },
+    writeIndentIfNeeded: function() {
+        return XXX;
+    },
 };
 exports.CodeWriter = CodeWriter;
 

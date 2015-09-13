@@ -85,9 +85,10 @@ DataTypeMember.prototype = Object.create(TypeMember.prototype, {
 DataTypeMember.prototype.constructor = DataTypeMember;
 exports.DataTypeMember = DataTypeMember;
 
-function FunTypeMember(name, params, body) {
+function FunTypeMember(name, params, returnType, body) {
     TypeMember.call(this, name);
     this.params = params;
+    this.returnType = returnType;
     this.body = body;
 }
 FunTypeMember.prototype = Object.create(TypeMember.prototype, {
@@ -143,6 +144,15 @@ Expr.prototype = {
 };
 exports.Expr = Expr;
 
+function LiteralExpr(literal) {
+    Expr.call(this);
+    this.literal = literal;
+}
+LiteralExpr.prototype = Object.create(Expr.prototype, {
+});
+LiteralExpr.prototype.constructor = LiteralExpr;
+exports.LiteralExpr = LiteralExpr;
+
 function VarExpr(name) {
     Expr.call(this);
     this.name = name;
@@ -173,15 +183,34 @@ RecExpr.prototype = Object.create(Expr.prototype, {
 RecExpr.prototype.constructor = RecExpr;
 exports.RecExpr = RecExpr;
 
-function ApplicationExpr(fun, body) {
+function ApplyExpr(fun, args) {
     Expr.call(this);
     this.fun = fun;
-    this.body = body;
+    this.args = args;
 }
-ApplicationExpr.prototype = Object.create(Expr.prototype, {
+ApplyExpr.prototype = Object.create(Expr.prototype, {
 });
-ApplicationExpr.prototype.constructor = ApplicationExpr;
-exports.ApplicationExpr = ApplicationExpr;
+ApplyExpr.prototype.constructor = ApplyExpr;
+exports.ApplyExpr = ApplyExpr;
+
+function MemberExpr(obj, member) {
+    Expr.call(this);
+    this.obj = obj;
+    this.member = member;
+}
+MemberExpr.prototype = Object.create(Expr.prototype, {
+});
+MemberExpr.prototype.constructor = MemberExpr;
+exports.MemberExpr = MemberExpr;
+
+function BlockExpr(statements) {
+    Expr.call(this);
+    this.statements = statements;
+}
+BlockExpr.prototype = Object.create(Expr.prototype, {
+});
+BlockExpr.prototype.constructor = BlockExpr;
+exports.BlockExpr = BlockExpr;
 
 function Literal() {
 }
@@ -215,4 +244,71 @@ FloatLiteral.prototype = Object.create(Literal.prototype, {
 });
 FloatLiteral.prototype.constructor = FloatLiteral;
 exports.FloatLiteral = FloatLiteral;
+
+function BoolLiteral(value) {
+    Literal.call(this);
+    this.value = value;
+}
+BoolLiteral.prototype = Object.create(Literal.prototype, {
+});
+BoolLiteral.prototype.constructor = BoolLiteral;
+exports.BoolLiteral = BoolLiteral;
+
+function Stmt() {
+}
+Stmt.prototype = {
+};
+exports.Stmt = Stmt;
+
+function ExprStmt(expr) {
+    Stmt.call(this);
+    this.expr = expr;
+}
+ExprStmt.prototype = Object.create(Stmt.prototype, {
+});
+ExprStmt.prototype.constructor = ExprStmt;
+exports.ExprStmt = ExprStmt;
+
+function AssignStmt(left, value) {
+    Stmt.call(this);
+    this.left = left;
+    this.value = value;
+}
+AssignStmt.prototype = Object.create(Stmt.prototype, {
+});
+AssignStmt.prototype.constructor = AssignStmt;
+exports.AssignStmt = AssignStmt;
+
+function LetStmt(name, typeref, initialValue) {
+    Stmt.call(this);
+    this.name = name;
+    this.typeref = typeref;
+    this.initialValue = initialValue;
+}
+LetStmt.prototype = Object.create(Stmt.prototype, {
+});
+LetStmt.prototype.constructor = LetStmt;
+exports.LetStmt = LetStmt;
+
+function IfStmt(condition, trueBody, falseBody) {
+    Stmt.call(this);
+    this.condition = condition;
+    this.trueBody = trueBody;
+    this.falseBody = falseBody;
+}
+IfStmt.prototype = Object.create(Stmt.prototype, {
+});
+IfStmt.prototype.constructor = IfStmt;
+exports.IfStmt = IfStmt;
+
+function ForStmt(name, collection, body) {
+    Stmt.call(this);
+    this.name = name;
+    this.collection = collection;
+    this.body = body;
+}
+ForStmt.prototype = Object.create(Stmt.prototype, {
+});
+ForStmt.prototype.constructor = ForStmt;
+exports.ForStmt = ForStmt;
 

@@ -57,6 +57,53 @@ function compile(s, w) {
 		w.write(")")
 	}
 	
+	function writeStatements(ss) {
+		ss.forEach(function(x) {
+			if (x instanceof ast.ExprStmt) {
+				writeExpr(x.expr);
+				w.write(";");
+			}
+			else if (x instanceof ast.AssignStmt) {
+				writeExpr(x.left);
+				w.write(" = ");
+				writeExpr(x.value);
+				w.write(";");
+			}
+			else if (x instanceof ast.IfStmt) {
+				w.write("if (");
+				writeExpr(x.condition);
+				w.writen(") {");
+				w.indent();
+				writeStatements(x.trueBody);
+				w.outdent();
+				w.write("}");
+			}
+			else if (x instanceof ast.ForRangeStmt) {
+				w.write("for (var ");
+				w.write(x.name);
+				w.write(" = ");
+				writeExpr(x.init);
+				w.write("; ");
+				w.write(x.name);
+				w.write(" ");
+				w.write(x.op);
+				w.write(" ");
+				writeExpr(x.end);
+				w.write("; ");
+				w.write(x.name);
+				w.writen("++) {");
+				w.indent();
+				writeStatements(x.body);
+				w.outdent();
+				w.write("}");
+			}
+			else {
+				w.write("SSS;");
+			}
+			w.writen();
+		});
+	}
+	
 	function writeExpr(x) {
 		var head = "";
 		var y;
@@ -82,34 +129,18 @@ function compile(s, w) {
 			});
 			w.write(")");
 		}
+		else if (x instanceof ast.BlockExpr) {
+			writeStatements(x.statements);
+		}
 		else {
-			w.write("XXX");
+			w.write(x.constructor);
 		}
 	}
 	
 	function writeFunBody(body) {
 		w.writen("{");
 		w.indent();
-		if (body instanceof ast.BlockExpr) {
-			body.statements.forEach(function(x) {
-				if (x instanceof ast.ExprStmt) {
-					writeExpr(x.expr);
-					w.write(";");
-				}
-				else if (x instanceof ast.AssignStmt) {
-					writeExpr(x.left);
-					w.write(" = ");
-					writeExpr(x.value);
-					w.write(";");
-				}
-				w.writen();
-			});
-		}
-		else {
-			w.write("return ");
-			writeExpr(body);
-			w.writen(";");
-		}
+		writeExpr(body);
 		w.outdent();
 		w.write("}");
 	}

@@ -186,7 +186,7 @@ case 59:
 this.$=new ast.NamedTyperef("Fun", [$$[$0-2],$$[$0]]);
 break;
 case 61:
-this.$=($$[$0-2].length==1)?($$[$0-2][0]):(new ast.BlockExpr($$[$0-2]));
+this.$=new ast.BlockExpr($$[$0-2]);
 break;
 case 63:
 this.$=new ast.WhereExpr($$[$0-2], $$[$0]);
@@ -246,10 +246,10 @@ case 121:
 this.$=new ast.AssignStmt($$[$0-2], $$[$0]);
 break;
 case 122:
-this.$=new ast.IfStmt($$[$0-6], $$[$0-2], null);
+this.$=new ast.IfStmt($$[$0-6], $$[$0-2], []);
 break;
 case 123:
-this.$=new ast.ForStmt($$[$0-10], $$[$0-8], $$[$0-2]);
+this.$=new ast.ForRangeStmt($$[$0-10], $$[$0-8], $$[$0-6], "<", $$[$0-2]);
 break;
 }
 },

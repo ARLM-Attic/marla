@@ -265,7 +265,7 @@ expr_or_block
     : expr
         {$$=$1;}
     | LF INDENT LF stmt_list LF OUTDENT 
-        {$$=($4.length==1)?($4[0]):(new ast.BlockExpr($4));}
+        {$$=new ast.BlockExpr($4);}
     ;
 
 expr
@@ -435,9 +435,9 @@ stmt
     | expr ASSIGN_OP expr_or_block
         {$$=new ast.AssignStmt($1, $3);}
     | IF expr LF INDENT LF stmt_list LF OUTDENT
-        {$$=new ast.IfStmt($2, $6, null);}
+        {$$=new ast.IfStmt($2, $6, []);}
     | FOR IDENTIFIER '=' expr RANGE expr LF INDENT LF stmt_list LF OUTDENT
-        {$$=new ast.ForStmt($2, $4, $10);}
+        {$$=new ast.ForRangeStmt($2, $4, $6, "<", $10);}
     ;
     
 stmt_list

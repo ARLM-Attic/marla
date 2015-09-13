@@ -49,5 +49,5 @@ type Stmt =
 	| Assign(left: Expr, value: Expr)
 	| Let(name: String, typeref: Typeref?, initialValue: Expr)
 	| If(condition: Expr, trueBody: [Stmt], falseBody: [Stmt])
-	| For(name: String, collection: Expr, body: [Stmt])
+	| ForRange(name: String, init: Expr, end: Expr, op: String, body: [Stmt])
 	

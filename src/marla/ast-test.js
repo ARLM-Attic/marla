@@ -301,14 +301,16 @@ IfStmt.prototype = Object.create(Stmt.prototype, {
 IfStmt.prototype.constructor = IfStmt;
 exports.IfStmt = IfStmt;
 
-function ForStmt(name, collection, body) {
+function ForRangeStmt(name, init, end, op, body) {
     Stmt.call(this);
     this.name = name;
-    this.collection = collection;
+    this.init = init;
+    this.end = end;
+    this.op = op;
     this.body = body;
 }
-ForStmt.prototype = Object.create(Stmt.prototype, {
+ForRangeStmt.prototype = Object.create(Stmt.prototype, {
 });
-ForStmt.prototype.constructor = ForStmt;
-exports.ForStmt = ForStmt;
+ForRangeStmt.prototype.constructor = ForRangeStmt;
+exports.ForRangeStmt = ForRangeStmt;
 

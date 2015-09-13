@@ -45,8 +45,7 @@ function CodeWriter(parts, indentString) {
 }
 CodeWriter.prototype = {
     toString: function() {
-        return "".join(parts);
-    },
+        "".join(parts)},
     write: function(s) {
         writeIndentIfNeeded();
         parts.push(s);
@@ -58,13 +57,18 @@ CodeWriter.prototype = {
         needsIndex = true;
     },
     indent: function() {
-        return XXX;
+        indentLevel = +(indentLevel, 1);
     },
     outdent: function() {
-        return XXX;
+        indentLevel = -(indentLevel, 1);
     },
     writeIndentIfNeeded: function() {
-        return XXX;
+        if (needsIndent) {
+            needsIndent = false;
+            for (var i = 0; i < indentLevel; i++) {
+                parts.push(indentString);
+            }
+        }
     },
 };
 exports.CodeWriter = CodeWriter;

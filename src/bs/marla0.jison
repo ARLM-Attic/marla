@@ -146,15 +146,18 @@ type_member
     
 params
     : IDENTIFIER
+        {$$=[$1];}
     | '(' param_list ')'
+        {$$=$2;}
     | '(' ')'
+        {$$=[];}
     ;
     
 param_list
     : param
         {$$=[$1];}
     | param_list ',' param
-        {$1.push($2);$$=$1;}
+        {$1.push($3);$$=$1;}
     ;
     
 param
@@ -258,7 +261,7 @@ fun_typeref
     
 expr_or_block
     : expr
-        {$$=$1;}
+        {$$=[$1];}
     | LF INDENT LF stmt_list LF OUTDENT 
         {$$=$4;}
     ;
@@ -417,15 +420,21 @@ rec_binding_block_list
 
 stmt
     : expr
+        {$$=$1;}
     | expr ASSIGN_OP expr_or_block
+//        {$$=new ast.AssignStmt($1);}
     | let_expr
+        {$$=$1;}
     | IF expr LF INDENT LF stmt_list LF OUTDENT
+//        {$$=new ast.IfStmt($1);}
     | FOR IDENTIFIER '=' expr RANGE expr LF INDENT LF stmt_list LF OUTDENT
     ;
     
 stmt_list
     : stmt
+        {$$=[$1];}
     | stmt_list LF stmt
+        {$1.push($3);$$=$1;}
     ;
 
 let_expr

@@ -45,6 +45,25 @@ CodeWriter.prototype = {
 }
 
 function compile(s, w) {
+	
+	function writeFunParams(ps) {
+		var head = "";
+		w.write("(");
+		ps.forEach(function(x) {
+			w.write(head);
+			w.write(x);
+			head = ", ";
+		});
+		w.write(")")
+	}
+	
+	function writeFunBody(body) {
+		w.write("{");
+		w.indent();
+		w.outdent();
+		w.write("}");
+	}
+	
 	// console.log(util.inspect(s, {showHidden: false, depth: null}));
 	var typeDecls =
 		s.members
@@ -79,6 +98,19 @@ function compile(s, w) {
 		w.write(x.name);
 		w.writen(".prototype = {");
 		w.indent();
+		
+		var xfunMems =
+			x.members
+			.filter(function(x){return x instanceof ast.FunTypeMember});
+		xfunMems.forEach(function(x){
+			w.write(x.name);
+			w.write(": function");
+			writeFunParams(x.params);
+			w.write(" ");
+			writeFunBody(x.body);
+			w.writen(",");
+		});
+		
 		w.outdent();
 		w.writen("};");
 		

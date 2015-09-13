@@ -92,7 +92,7 @@ break;
 case 3:
 return new ast.Module([]);
 break;
-case 4: case 15: case 17: case 19: case 54: case 57: case 58: case 60: case 62: case 66: case 69: case 70: case 83: case 85: case 91: case 94:
+case 4: case 15: case 17: case 19: case 54: case 57: case 58: case 62: case 66: case 69: case 70: case 83: case 85: case 91: case 94: case 117: case 119:
 this.$=$$[$0];
 break;
 case 5:
@@ -113,13 +113,13 @@ break;
 case 10:
 this.$=new ast.TypeModuleMember($$[$0-10],$$[$0-8],$$[$0-2]);
 break;
-case 11: case 13: case 29: case 33: case 37: case 52: case 55:
+case 11: case 13: case 26: case 29: case 33: case 37: case 52: case 55: case 60: case 122:
 this.$=[$$[$0]];
 break;
-case 12: case 14: case 34: case 38: case 53: case 56:
+case 12: case 14: case 30: case 34: case 38: case 53: case 56: case 123:
 $$[$0-2].push($$[$0]);this.$=$$[$0-2];
 break;
-case 16:
+case 16: case 27:
 this.$=$$[$0-1];
 break;
 case 18: case 20:
@@ -140,8 +140,8 @@ break;
 case 25:
 this.$=new ast.FunTypeMember($$[$0-3],$$[$0-2],$$[$0-1],$$[$0]);
 break;
-case 30:
-$$[$0-2].push($$[$0-1]);this.$=$$[$0-2];
+case 28:
+this.$=[];
 break;
 case 35:
 this.$=new ast.DataTypeMember($$[$0-2],$$[$0],null);

@@ -104,6 +104,11 @@ function compile(s, w) {
 		});
 	}
 	
+	function isInfix(expr) {
+		return (expr instanceof ast.VarExpr) &&
+			(expr.name=="+"||expr.name=="-"||expr.name=="*"||expr.name=="/");
+	}
+	
 	function writeExpr(x) {
 		var head = "";
 		var y;
@@ -119,15 +124,26 @@ function compile(s, w) {
 			w.write(x.member);
 		}
 		else if (x instanceof ast.ApplyExpr) {
-			writeExpr(x.fun);
-			w.write("(");
-			head = "";
-			x.args.forEach(function(x) {
-				w.write(head);
-				writeExpr(x);
-				head = ", ";
-			});
-			w.write(")");
+			if (x.args.length==2 && isInfix(x.fun)) {
+				w.write("(");
+				writeExpr(x.args[0]);
+				w.write(") ");
+				writeExpr(x.fun);
+				w.write(" (");
+				writeExpr(x.args[1]);
+				w.write(")");
+			}
+			else {
+				writeExpr(x.fun);
+				w.write("(");
+				head = "";
+				x.args.forEach(function(x) {
+					w.write(head);
+					writeExpr(x);
+					head = ", ";
+				});
+				w.write(")");
+			}
 		}
 		else if (x instanceof ast.BlockExpr) {
 			writeStatements(x.statements);

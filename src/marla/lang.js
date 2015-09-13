@@ -57,10 +57,10 @@ CodeWriter.prototype = {
         needsIndex = true;
     },
     indent: function() {
-        indentLevel = +(indentLevel, 1);
+        indentLevel = (indentLevel) + (1);
     },
     outdent: function() {
-        indentLevel = -(indentLevel, 1);
+        indentLevel = (indentLevel) - (1);
     },
     writeIndentIfNeeded: function() {
         if (needsIndent) {

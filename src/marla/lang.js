@@ -45,28 +45,28 @@ function CodeWriter(parts, indentString) {
 }
 CodeWriter.prototype = {
     toString: function() {
-        "".join(parts)},
+        "".join(this.parts)},
     write: function(s) {
-        writeIndentIfNeeded();
-        parts.push(s);
+        this.writeIndentIfNeeded();
+        this.parts.push(s);
     },
     writen: function(s) {
-        writeIndentIfNeeded();
-        parts.push(s);
-        parts.push("\n");
-        needsIndex = true;
+        this.writeIndentIfNeeded();
+        this.parts.push(s);
+        this.parts.push("\n");
+        this.needsIndex = true;
     },
     indent: function() {
-        indentLevel = (indentLevel) + (1);
+        this.indentLevel = (this.indentLevel) + (1);
     },
     outdent: function() {
-        indentLevel = (indentLevel) - (1);
+        this.indentLevel = (this.indentLevel) - (1);
     },
     writeIndentIfNeeded: function() {
-        if (needsIndent) {
-            needsIndent = false;
-            for (var i = 0; i < indentLevel; i++) {
-                parts.push(indentString);
+        if (this.needsIndent) {
+            this.needsIndent = false;
+            for (var i = 0; i < this.indentLevel; i++) {
+                this.parts.push(this.indentString);
             }
         }
     },
